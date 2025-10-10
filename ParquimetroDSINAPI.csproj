@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.19" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ParquimetroDSINAPI.Business\DTOs\" />
+    <Folder Include="ParquimetroDSINAPI.Api\Controllers\" />
+    <Folder Include="ParquimetroDSINAPI.Business\Interfaces\IServices\" />
+    <Folder Include="ParquimetroDSINAPI.Data\Dependências\" />
+    <Folder Include="ParquimetroDSINAPI.Business\Services\" />
+    <Folder Include="ParquimetroDSINAPI.Api\" />
+    <Folder Include="ParquimetroDSINAPI.Data\Context\" />
+    <Folder Include="ParquimetroDSINAPI.Data\Repositories\" />
+  </ItemGroup>
+
+</Project>
