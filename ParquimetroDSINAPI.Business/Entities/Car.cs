@@ -3,6 +3,6 @@
     public class Car : EntityBase
     {
         public string Plate { get; set; }
-        public string Name { get; set; }
+        public string CarName { get; set; }
     }
 }

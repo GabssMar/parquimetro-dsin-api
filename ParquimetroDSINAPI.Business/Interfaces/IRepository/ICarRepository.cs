@@ -6,5 +6,6 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository
     {
         public Car FindById(Guid Id);
         public Car FindByPlate(string Plate);
+        public Car SaveCar(Car car);
     }
 }

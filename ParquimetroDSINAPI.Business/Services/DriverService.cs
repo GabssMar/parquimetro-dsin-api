@@ -14,7 +14,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
             this._driverRepository = driverRepository;
         }
 
-        public Task<Driver> EditDriver(int driverID, EditDriverDTO dto)
+        public Task<Driver> EditDriver(Guid Id, EditDriverDTO dto)
         {
             throw new NotImplementedException();
         }

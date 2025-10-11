@@ -5,6 +5,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices
 {
     public interface ICarService
     {
-        public Task<Car> EditCar(int carId, EditCarDTO dto);
+        public Task<Car> EditCar(Guid Id, EditCarDTO dto);
+        public void CreateCar(CreateCarDTO newCar);
     }
 }

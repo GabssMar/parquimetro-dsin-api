@@ -2,9 +2,9 @@
 
 namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.DTOs
 {
-    public class EditCarDTO
+    public class CreateCarDTO
     {
-        public required string Plate {  get; set; }
-        public required string Name { get; set; }
+        public required string Plate { get; set; }
+        public required string CarName { get; set; }
     }
 }
