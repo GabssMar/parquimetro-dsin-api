@@ -18,5 +18,23 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
         {
             throw new NotImplementedException();
         }
+
+        public void CreateDriver(CreateDriverDTO driverDTO)
+        {
+            Driver savedDriver = _driverRepository.FindByPhone(driverDTO.Phone);
+
+            if(savedDriver != null)
+            {
+                throw new Exception("Motorista já cadastrado");
+            }
+
+            Driver newDriver = new Driver();
+            newDriver.FirstName = driverDTO.FirstName;
+            newDriver.LastName = driverDTO.LastName;
+            newDriver.Email = driverDTO.Email;
+            newDriver.Phone = driverDTO.Phone;
+
+            _driverRepository.SaveDriver(newDriver);
+        }
     }
 }
