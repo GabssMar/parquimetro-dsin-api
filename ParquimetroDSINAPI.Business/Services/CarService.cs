@@ -2,6 +2,7 @@
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Entities;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices;
+using System.Numerics;
 
 namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
 {
@@ -14,9 +15,32 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
             this._carRepository = carRepository;
         }
 
-        public Task<Car> EditCar(Guid Id, EditCarDTO dto)
+        public async Task<Car> EditCar(string plate, EditCarDTO dto)
         {
-            throw new NotImplementedException();
+            Car existingCar = await _carRepository.FindByPlateAsync(plate);
+
+            if (existingCar == null)
+            {
+                throw new Exception("Carro não encontrado para edição.");
+            }
+
+            if (dto.Plate != existingCar.Plate)
+            {
+                Car carWithNewPlate = await _carRepository.FindByPlateAsync(dto.Plate);
+
+                if (carWithNewPlate != null)
+                {
+                    throw new Exception("A placa informada já está em uso.");
+                }
+
+                existingCar.Plate = dto.Plate;
+            }
+
+            existingCar.CarName = dto.Name;
+
+            Car updatedCar = await _carRepository.UpdateCarAsync(existingCar);
+
+            return updatedCar;
         }
 
         public void CreateCar(CreateCarDTO carDTO)
@@ -34,5 +58,18 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
 
             _carRepository.SaveCar(newCar);
         }
+
+        public void DeleteCar(string plate)
+        {
+            Car deleteCar = _carRepository.FindByPlate(plate);
+
+            if (deleteCar == null)
+            {
+                throw new Exception("Carro não encontrado.");
+            }
+
+            _carRepository.DeleteCar(deleteCar);
+        }
+
     }
 }
