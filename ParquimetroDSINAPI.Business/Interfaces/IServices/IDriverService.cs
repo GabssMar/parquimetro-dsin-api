@@ -5,6 +5,8 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices
 {
     public interface IDriverService
     {
-        public Task<Driver> EditDriver(Guid Id, EditDriverDTO dto);
+        public Driver EditDriver(string phone, EditDriverDTO dto);
+        public void CreateDriver(CreateDriverDTO newDriver);
+        public void DeleteDriver(string phone);
     }
 }

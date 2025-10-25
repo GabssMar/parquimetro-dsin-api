@@ -14,16 +14,39 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
             this._driverRepository = driverRepository;
         }
 
-        public Task<Driver> EditDriver(Guid Id, EditDriverDTO dto)
+        public Driver EditDriver(string phone, EditDriverDTO dto)
         {
-            throw new NotImplementedException();
+            Driver existingDriver = _driverRepository.FindByPhone(phone);
+
+            if (existingDriver == null)
+            {
+                throw new Exception("Motorista não encontrado para edição.");
+            }
+
+            if (dto.Phone != existingDriver.Phone)
+            {
+                Driver driverWithNewPhone = _driverRepository.FindByPhone(dto.Phone);
+
+                if (driverWithNewPhone != null)
+                {
+                    throw new Exception("O novo telefone informado já está cadastrado em outro motorista.");
+                }
+
+                existingDriver.Phone = dto.Phone;
+            }
+
+            existingDriver.Email = dto.Email;
+
+            Driver updatedDriver = _driverRepository.UpdateDriver(existingDriver);
+
+            return updatedDriver;
         }
 
         public void CreateDriver(CreateDriverDTO driverDTO)
         {
             Driver savedDriver = _driverRepository.FindByPhone(driverDTO.Phone);
 
-            if(savedDriver != null)
+            if (savedDriver != null)
             {
                 throw new Exception("Motorista já cadastrado");
             }
@@ -35,6 +58,18 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
             newDriver.Phone = driverDTO.Phone;
 
             _driverRepository.SaveDriver(newDriver);
+        }
+
+        public void DeleteDriver(string phone)
+        {
+            Driver deleteDriver = _driverRepository.FindByPhone(phone);
+
+            if (deleteDriver == null)
+            {
+                throw new Exception("Driver não encontrado.");
+            }
+
+            _driverRepository.DeleteDriver(deleteDriver);
         }
     }
 }

@@ -15,9 +15,9 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
             this._carRepository = carRepository;
         }
 
-        public async Task<Car> EditCar(string plate, EditCarDTO dto)
+        public Car EditCar(string plate, EditCarDTO dto)
         {
-            Car existingCar = await _carRepository.FindByPlateAsync(plate);
+            Car existingCar = _carRepository.FindByPlate(plate);
 
             if (existingCar == null)
             {
@@ -26,7 +26,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
 
             if (dto.Plate != existingCar.Plate)
             {
-                Car carWithNewPlate = await _carRepository.FindByPlateAsync(dto.Plate);
+                Car carWithNewPlate = _carRepository.FindByPlate(dto.Plate);
 
                 if (carWithNewPlate != null)
                 {
@@ -38,7 +38,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
 
             existingCar.CarName = dto.Name;
 
-            Car updatedCar = await _carRepository.UpdateCarAsync(existingCar);
+            Car updatedCar = _carRepository.UpdateCar(existingCar);
 
             return updatedCar;
         }
