@@ -7,5 +7,6 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository
         public Parking FindById(Guid Id);
         public Parking FindByDriver(Guid DriverId);
         public Parking FindByCar(Guid CarId);
+        public Parking SaveParking(Parking parking);
     }
 }
