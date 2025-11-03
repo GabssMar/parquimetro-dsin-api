@@ -24,10 +24,13 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Context
             modelBuilder.Entity<Parking>()
                 .HasKey(parking => parking.Id);
 
-            modelBuilder.Entity<Parking>()
-                .HasOne(parking => parking.Car)
-                .WithOne(parking => parking.Driver)
+            modelBuilder.Entity<Driver>()
+                .HasIndex(driver => driver.Email)
+                .IsUnique();
 
+            modelBuilder.Entity<Car>()
+                .HasIndex(car => car.Plate)
+                .IsUnique();
         }
     }
 }
