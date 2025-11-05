@@ -8,47 +8,70 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services {
 
     public class ParkingService : IParkingService
     {
+        private const decimal Price1Hour = 5.00m;
+        private const decimal Price2Hours = 10.00m;
+
         private readonly IParkingRepository _parkingRepository;
         private readonly IDriverRepository _driverRepository;
         private readonly ICarRepository _carRepository;
+        private readonly IParkingAreaRepository _parkingAreaRepository;
 
         public ParkingService(IParkingRepository parkingRepository, IDriverRepository driverRepository, ICarRepository carRepository)
         {
             this._parkingRepository = parkingRepository;
             this._driverRepository = driverRepository;
             this._carRepository = carRepository;
+            this._parkingAreaRepository = _parkingAreaRepository;
         }
 
-        public void CreateParking(CreateParkingDTO parkingDTO)
+        public async Task<Parking> CreateParking(CreateParkingDTO parkingDTO)
         {
-            Driver existingDriver = _driverRepository.FindById(parkingDTO.DriverId);
+            if (parkingDTO.TimeInMins != 60 && parkingDTO.TimeInMins != 120)
+            {
+                throw new Exception("Tempo de estacionamento inválido. Selecione somente 60 ou 120 minutos");
+            }
+
+            Driver existingDriver = await _driverRepository.FindById(parkingDTO.DriverId);
             
             if (existingDriver == null)
             {
                 throw new Exception("Motorista não encontrado.");
             }
 
-            Car existingCar = _carRepository.FindByPlate(parkingDTO.Plate);
+            Car existingCar = await _carRepository.FindByPlate(parkingDTO.Plate);
 
             if(existingCar == null)
             {
                 throw new Exception("Carro não encotrado.");
             }
 
-            Parking activeParking = _parkingRepository.FindByDriver(parkingDTO.DriverId);
+            ParkingArea existingArea = await _parkingAreaRepository.FindById(parkingDTO.ParkingAreaId);
+
+            Parking activeParking = await _parkingRepository.FindByDriver(parkingDTO.DriverId);
 
             if(activeParking != null)
             {
                 throw new Exception("Motorista já possui um estacionamento ativo.");
             }
 
-            Parking newParking = new Parking();
-            newParking.DriverId = parkingDTO.DriverId;
-            newParking.CarId = existingCar.Id;
-            newParking.TimeInMins = parkingDTO.TimeInMins;
+            decimal priceParking = (parkingDTO.TimeInMins == 60) ? Price1Hour : Price2Hours;
+            var startTime = DateTime.UtcNow;
+            var endTime = startTime.AddMinutes(parkingDTO.TimeInMins);
 
-            _parkingRepository.SaveParking(newParking);
+            Parking newParking = new Parking
+            {
+                DriverId = parkingDTO.DriverId,
+                CarId = existingCar.Id,
+                ParkingAreaId = parkingDTO.ParkingAreaId,
+                TimeInMins = parkingDTO.TimeInMins,
+                StartTime = startTime,
+                EndTime = endTime,
+                TotalPrice = priceParking
+            };
 
+            await _parkingRepository.SaveParking(newParking);
+
+            return newParking;
         }
     }
 }
