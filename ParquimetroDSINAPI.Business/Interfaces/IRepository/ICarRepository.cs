@@ -4,10 +4,11 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository
 {
     public interface ICarRepository
     {
-        public Car FindById(Guid Id); 
-        public Car FindByPlate(string Plate);
-        public Car SaveCar(Car car);
-        public void DeleteCar(Car car);
-        public Car UpdateCar(Car car);
+        Task<Car> AddAsync();
+        Task<Car> UpdateAsync();
+        Task DeleteAsync();
+        Task<Car?> FindByIdAsync(Guid Id); 
+        Task<Car?> FindByPlateAsync(string Plate);
+        Task<List<Car>> GetAllByDriverIdAsync(Guid Id);
     }
 }

@@ -10,8 +10,8 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository
         Task<ParkingArea> AddAsync(ParkingArea parkingArea);
         Task<ParkingArea> UpdateAsync(ParkingArea parkingArea);
         Task DeleteAsync(ParkingArea parkingArea);
-        Task<ParkingArea> FindById(Guid Id);
-        Task<ParkingArea> FindByName(string Name);
+        Task<ParkingArea?> FindByIdAsync(Guid Id);
+        Task<ParkingArea?> FindByNameAsync(string Name);
         Task<List<ParkingArea>> GetAllAsync();
     }
 }

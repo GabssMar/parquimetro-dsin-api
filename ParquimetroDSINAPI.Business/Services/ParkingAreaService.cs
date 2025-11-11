@@ -20,7 +20,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
 
         public async Task<ParkingArea> CreateParkingAreaAsync(CreateParkingAreaDTO dto)
         {
-            var existingArea = await _parkingAreaRepository.FindByName(dto.Name);
+            var existingArea = await _parkingAreaRepository.FindByNameAsync(dto.Name);
 
             if (existingArea == null)
             {
@@ -40,7 +40,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
 
         public async Task<ParkingArea> UpdateParkingAreaAsync(Guid Id, EditParkingAreaDTO dto)
         {
-            var areaToUpdate = await _parkingAreaRepository.FindByIdAsync(id);
+            var areaToUpdate = await _parkingAreaRepository.FindByIdAsync(Id);
 
             if (areaToUpdate == null)
             {
@@ -54,7 +54,46 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
                 throw new Exception("O nome da área já está em uso por outra área.");
             }
 
+            areaToUpdate.Name = dto.Name;
+            areaToUpdate.Description = dto.Description;
+            areaToUpdate.MapCoordinates = dto.MapCoordinates;
 
+            await _parkingAreaRepository.UpdateAsync(areaToUpdate);
+
+            return areaToUpdate;
+        }
+
+        public async Task DeleteParkingAreaAsync(Guid id)
+        {
+            var areaToDelete = await _parkingAreaRepository.FindByIdAsync(id);
+            if (areaToDelete == null)
+            {
+                throw new Exception("Área de estacionamento não encontrada.");
+            }
+
+            try
+            {
+                await _parkingAreaRepository.DeleteAsync(areaToDelete);
+            }
+            catch (DbUpdateException)
+            {
+                throw new Exception("Não foi possível deletar essa área pois ela possui tickets de estacionamento ativos.");
+            }
+        }
+
+        public async Task<List<ParkingArea>> GetAllParkingAreasAsync()
+        {
+            return await _parkingAreaRepository.GetAllAsync();
+        }
+
+        public async Task<ParkingArea> GetParkingAreaById(Guid id)
+        {
+            var area = await _parkingAreaRepository.FindByIdAsync(id);
+            if (area == null)
+            {
+                throw new Exception("Área de estacionamento não encontrada.");
+            }
+            return area;
         }
     }
 }
