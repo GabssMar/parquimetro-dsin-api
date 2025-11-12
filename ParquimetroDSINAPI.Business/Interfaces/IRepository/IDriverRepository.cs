@@ -12,5 +12,6 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository
         Task<Driver?> FindByPhoneAsync(string Phone);
         Task<Driver?> FindByEmailAsync(string Email);
         Task<List<Driver>> GetAllAsync();
+        Task<Driver?> SaveDriverAsync(Driver driver);
     }
 }
