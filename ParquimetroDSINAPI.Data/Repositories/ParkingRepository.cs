@@ -71,5 +71,13 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Repositories
                 .OrderByDescending(p => p.StartTime)
                 .ToListAsync();
         }
+
+        public async Task<Parking?> SaveParking(Parking parking)
+        {
+            _context.Parkings.Add(parking);
+            await _context.SaveChangesAsync();
+
+            return parking;
+        }
     }
 }

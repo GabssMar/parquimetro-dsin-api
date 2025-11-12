@@ -11,5 +11,6 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository
         Task<Parking?> FindActiveByDriverIdAsync(Guid driverId);
         Task<Parking?> FindActiveByCarIdAsync(Guid carId);
         Task<List<Parking>> GetAllByDriverIdAsync(Guid driverId);
+        Task<Parking?> SaveParking(Parking parking);
     }
 }

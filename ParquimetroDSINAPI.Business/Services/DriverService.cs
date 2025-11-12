@@ -14,9 +14,9 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
             this._driverRepository = driverRepository;
         }
 
-        public Driver EditDriver(string phone, EditDriverDTO dto)
+        public  async Task<Driver> EditDriver(string phone, EditDriverDTO dto)
         {
-            Driver existingDriver = _driverRepository.FindByPhone(phone);
+            Driver? existingDriver = await _driverRepository.FindByPhoneAsync(phone);
 
             if (existingDriver == null)
             {
@@ -25,7 +25,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
 
             if (dto.Phone != existingDriver.Phone)
             {
-                Driver driverWithNewPhone = _driverRepository.FindByPhone(dto.Phone);
+                Driver? driverWithNewPhone = await _driverRepository.FindByPhoneAsync(dto.Phone);
 
                 if (driverWithNewPhone != null)
                 {
@@ -37,39 +37,39 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
 
             existingDriver.Email = dto.Email;
 
-            Driver updatedDriver = _driverRepository.UpdateDriver(existingDriver);
+            Driver? updatedDriver = await _driverRepository.UpdateAsync(existingDriver);
 
             return updatedDriver;
         }
 
-        public void CreateDriver(CreateDriverDTO driverDTO)
+        public async Task CreateDriver(CreateDriverDTO driverDTO)
         {
-            Driver savedDriver = _driverRepository.FindByPhone(driverDTO.Phone);
+            Driver? savedDriver = await _driverRepository.FindByPhoneAsync(driverDTO.Phone);
 
             if (savedDriver != null)
             {
                 throw new Exception("Motorista já cadastrado");
             }
 
-            Driver newDriver = new Driver();
+            Driver newDriver = new();
             newDriver.FirstName = driverDTO.FirstName;
             newDriver.LastName = driverDTO.LastName;
             newDriver.Email = driverDTO.Email;
             newDriver.Phone = driverDTO.Phone;
 
-            _driverRepository.SaveDriver(newDriver);
+            await _driverRepository.SaveDriverAsync(newDriver);
         }
 
-        public void DeleteDriver(string phone)
+        public async Task DeleteDriver(string phone)
         {
-            Driver deleteDriver = _driverRepository.FindByPhone(phone);
+            Driver? deleteDriver = await _driverRepository.FindByPhoneAsync(phone);
 
             if (deleteDriver == null)
             {
                 throw new Exception("Driver não encontrado.");
             }
 
-            _driverRepository.DeleteDriver(deleteDriver);
+            await _driverRepository.DeleteAsync(deleteDriver);
         }
     }
 }
