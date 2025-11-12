@@ -22,7 +22,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
         {
             var existingArea = await _parkingAreaRepository.FindByNameAsync(dto.Name);
 
-            if (existingArea == null)
+            if (existingArea != null)
             {
                 throw new Exception("Já existe uma área de estacionamento com este nome.");
             }
@@ -59,7 +59,6 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
             areaToUpdate.MapCoordinates = dto.MapCoordinates;
 
             await _parkingAreaRepository.UpdateAsync(areaToUpdate);
-
             return areaToUpdate;
         }
 
@@ -77,7 +76,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
             }
             catch (DbUpdateException)
             {
-                throw new Exception("Não foi possível deletar essa área pois ela possui tickets de estacionamento ativos.");
+                throw new Exception("Não é possível excluir esta área, pois ela possui tickets de estacionamento associados.");
             }
         }
 
@@ -86,7 +85,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
             return await _parkingAreaRepository.GetAllAsync();
         }
 
-        public async Task<ParkingArea> GetParkingAreaById(Guid id)
+        public async Task<ParkingArea> GetParkingAreaByIdAsync(Guid id)
         {
             var area = await _parkingAreaRepository.FindByIdAsync(id);
             if (area == null)

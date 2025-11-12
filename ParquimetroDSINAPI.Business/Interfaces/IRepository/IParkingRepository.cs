@@ -9,8 +9,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository
         Task DeleteAsync(Parking parking);
         Task<Parking?> FindByIdAsync(Guid Id);
         Task<Parking?> FindActiveByDriverIdAsync(Guid driverId);
-        Task<Parking?> FindActiveByCarIdAsync(Guid carId);
+        Task<Parking?> FindActiveByVehicleIdAsync(Guid vehicleId);
         Task<List<Parking>> GetAllByDriverIdAsync(Guid driverId);
-        Task<Parking?> SaveParking(Parking parking);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.DTOs
 {
-    public class CreateCarDTO
+    public class AuthResponseDTO
     {
-        public required string Plate { get; set; }
-        public required string CarName { get; set; }
+        public string Token { get; set; }
+        public Driver User { get; set; }
     }
 }

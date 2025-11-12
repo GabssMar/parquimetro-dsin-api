@@ -11,7 +11,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices
         Task<ParkingArea> CreateParkingAreaAsync(CreateParkingAreaDTO dto);
         Task<ParkingArea> UpdateParkingAreaAsync(Guid Id, EditParkingAreaDTO dto);
         Task DeleteParkingAreaAsync(Guid Id);
-        Task<ParkingArea> GetParkingAreaById(Guid Id);
+        Task<ParkingArea> GetParkingAreaByIdAsync(Guid Id);
         Task<List<ParkingArea>> GetAllParkingAreasAsync();
     }
 }

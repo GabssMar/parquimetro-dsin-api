@@ -3,9 +3,9 @@
     public class Parking : EntityBase
     {
         public Guid DriverId { get; set; }
-        public Guid CarId { get; set; }
+        public Guid VehicleId { get; set; }
         public Guid ParkingAreaId { get; set; }
-        public required virtual Car Car { get; set; }
+        public required virtual Vehicle Vehicle { get; set; }
         public required virtual Driver Driver { get; set; }
         public required virtual ParkingArea ParkingArea { get; set; }
         public int TimeInMins { get; set; }
