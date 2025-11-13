@@ -9,48 +9,48 @@ using System.Threading.Tasks;
 
 namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Repositories
 {
-    public class CarRepository : ICarRepository
+    public class VehicleRepository : IVehicleRepository
     {
         private readonly BaseContext _context;
 
-        public CarRepository(BaseContext context)
+        public VehicleRepository(BaseContext context)
         {
             _context = context;
         }
 
-        public async Task<Vehicle> AddAsync(Vehicle car)
+        public async Task<Vehicle> AddAsync(Vehicle vehicle)
         {
-            await _context.Cars.AddAsync(car);
+            await _context.Vehicles.AddAsync(vehicle);
             await _context.SaveChangesAsync();
-            return car;
+            return vehicle;
         }
 
-        public async Task<Vehicle> UpdateAsync(Vehicle car)
+        public async Task<Vehicle> UpdateAsync(Vehicle vehicle)
         {
-            _context.Cars.Update(car);
+            _context.Vehicles.Update(vehicle);
             await _context.SaveChangesAsync();
-            return car;
+            return vehicle;
         }
 
         public async Task DeleteAsync(Vehicle car)
         {
-            _context.Cars.Remove(car);
+            _context.Vehicles.Remove(car);
             await _context.SaveChangesAsync();
         }
 
         public async Task<Vehicle?> FindByIdAsync(Guid Id)
         {
-            return await _context.Cars.FindAsync(Id);
+            return await _context.Vehicles.FindAsync(Id);
         }
 
         public async Task<Vehicle?> FindByPlateAsync(string Plate)
         {
-            return await _context.Cars
+            return await _context.Vehicles
                 .FirstOrDefaultAsync(c => c.Plate.ToUpper() == Plate.ToUpper());
         }
         public async Task<List<Vehicle>> GetAllByDriverIdAsync(Guid driverId)
         {
-            return await _context.Cars
+            return await _context.Vehicles
                 .Where(c => c.DriverId == driverId)
                 .ToListAsync();
         }

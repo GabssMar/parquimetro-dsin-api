@@ -59,12 +59,5 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Repositories
             _context.Drivers.Remove(driver);
             await _context.SaveChangesAsync();
         }
-         public async Task<Driver?> SaveDriverAsync(Driver driver)
-        {
-            _context.Drivers.Add(driver);
-            await _context.SaveChangesAsync();
-
-            return driver;
-        }
     }
 }

@@ -54,13 +54,13 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Repositories
                     p.EndTime > now);
         }
 
-        public async Task<Parking?> FindActiveByCarIdAsync(Guid carId)
+        public async Task<Parking?> FindActiveByVehicleIdAsync(Guid vehicleId)
         {
             var now = DateTime.UtcNow;
 
             return await _context.Parkings
                 .FirstOrDefaultAsync(p =>
-                    p.CarId == carId &&
+                    p.VehicleId == vehicleId &&
                     p.EndTime > now);
         }
 
@@ -70,14 +70,6 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Repositories
                 .Where(p => p.DriverId == driverId)
                 .OrderByDescending(p => p.StartTime)
                 .ToListAsync();
-        }
-
-        public async Task<Parking?> SaveParking(Parking parking)
-        {
-            _context.Parkings.Add(parking);
-            await _context.SaveChangesAsync();
-
-            return parking;
         }
     }
 }

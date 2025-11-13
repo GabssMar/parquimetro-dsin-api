@@ -4,7 +4,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.DTOs
 {
     public class AuthResponseDTO
     {
-        public string Token { get; set; }
-        public Driver User { get; set; }
+        public required string Token { get; set; }
+        public required Driver User { get; set; }
     }
 }

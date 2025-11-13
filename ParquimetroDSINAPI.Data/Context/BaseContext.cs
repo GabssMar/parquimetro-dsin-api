@@ -6,7 +6,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Context
     public class BaseContext : DbContext
     {
         public DbSet<Driver> Drivers { get; set; }
-        public DbSet<Vehicle> Cars { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<Parking> Parkings { get; set; }
         public DbSet<ParkingArea> ParkingAreas { get; set; }
 
@@ -20,7 +20,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Context
                 .HasKey(driver => driver.Id);
 
             modelBuilder.Entity<Vehicle>()
-                .HasKey(car => car.Id);
+                .HasKey(vehicle => vehicle.Id);
 
             modelBuilder.Entity<Parking>()
                 .HasKey(parking => parking.Id);
@@ -33,7 +33,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Context
                 .IsUnique();
 
             modelBuilder.Entity<Vehicle>()
-                .HasIndex(car => car.Plate)
+                .HasIndex(vehicle => vehicle.Plate)
                 .IsUnique();
         }
     }

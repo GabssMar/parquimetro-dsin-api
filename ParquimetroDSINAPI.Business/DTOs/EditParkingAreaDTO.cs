@@ -2,8 +2,8 @@
 {
     public class EditParkingAreaDTO
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string MapCoordinates { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        public required string MapCoordinates { get; set; }
     }
 }
