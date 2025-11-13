@@ -2,9 +2,9 @@
 {
     public class ParkingArea : EntityBase
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string MapCoordinates { get; set; }
-        public virtual List<Parking> Parkings { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        public required string MapCoordinates { get; set; }
+        public virtual List<Parking> Parkings { get; set; } = new List<Parking>();
     }
 }
