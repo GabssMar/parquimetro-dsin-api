@@ -25,7 +25,6 @@
   <ItemGroup>
     <Folder Include="ParquimetroDSINAPI.Api\Controllers\" />
     <Folder Include="ParquimetroDSINAPI.Data\Dependências\" />
-    <Folder Include="ParquimetroDSINAPI.Api\" />
     <Folder Include="ParquimetroDSINAPI.Data\Context\" />
   </ItemGroup>
 

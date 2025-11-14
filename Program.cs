@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Services;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Entities;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services;
+using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services.Pricing;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Context;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Repositories;
-using ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Services;
-using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services.Pricing;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<BaseContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString,
+    npgsqlOptions => npgsqlOptions.MigrationsAssembly(Assembly.GetAssembly(typeof(BaseContext)).FullName)));
+
+
 
 
 builder.Services.AddScoped<IDriverRepository, DriverRepository>();
