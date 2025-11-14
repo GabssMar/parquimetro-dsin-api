@@ -80,7 +80,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services {
                 TimeInMins = parkingDTO.TimeInMins,
                 StartTime = startTime,
                 EndTime = endTime,
-                TotalPrice = priceParking,
+                TotalPrice = calculatedPrice,
                 Driver = existingDriver,
                 Vehicle = existingVehicle,
                 ParkingArea = existingArea
