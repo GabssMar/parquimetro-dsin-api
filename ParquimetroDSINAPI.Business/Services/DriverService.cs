@@ -14,9 +14,10 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
         private readonly IDriverRepository _driverRepository;
         private readonly ITokenService _tokenService;
 
-        public DriverService(IDriverRepository driverRepository)
+        public DriverService(IDriverRepository driverRepository, ITokenService tokenService)
         {
             _driverRepository = driverRepository;
+            _tokenService = tokenService;
         }
 
         public async Task<AuthResponseDTO> RegisterDriverAsync(RegisterDriverDTO dto)
@@ -41,7 +42,9 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
 
             await _driverRepository.AddAsync(newDriver);
 
-            return new AuthResponseDTO { User = newDriver, Token = "token_de_exemplo" };
+            string tokenString = _tokenService.GenerateToken(newDriver);
+
+            return new AuthResponseDTO { User = newDriver, Token = tokenString };
         }
 
         public async Task<AuthResponseDTO> LoginAsync(LoginDTO dto)
@@ -53,7 +56,9 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
                 throw new Exception("Email ou senha inválidos");
             }
 
-            return new AuthResponseDTO { User = driver, Token = "token_de_exemplo" };
+            string tokenString = _tokenService.GenerateToken(driver);
+
+            return new AuthResponseDTO { User = driver, Token = tokenString };
         }
 
         public async Task<Driver> GetDriverProfileAsync(Guid driverId)

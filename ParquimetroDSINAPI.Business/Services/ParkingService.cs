@@ -5,26 +5,27 @@ using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 
 namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services {
 
     public class ParkingService : IParkingService
     {
-        private const decimal Price1Hour = 5.00m;
-        private const decimal Price2Hours = 10.00m;
 
         private readonly IParkingRepository _parkingRepository;
         private readonly IDriverRepository _driverRepository;
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IParkingAreaRepository _parkingAreaRepository;
+        private readonly IEnumerable<IPricingStrategy> _pricingStrategies;
 
-        public ParkingService(IParkingRepository parkingRepository, IDriverRepository driverRepository, IVehicleRepository vehicleRepository, IParkingAreaRepository parkingAreaRepository)
+        public ParkingService(IParkingRepository parkingRepository, IDriverRepository driverRepository, IVehicleRepository vehicleRepository, IParkingAreaRepository parkingAreaRepository, IEnumerable<IPricingStrategy> pricingStrategies)
         {
             _parkingRepository = parkingRepository;
             _driverRepository = driverRepository;
             _vehicleRepository = vehicleRepository;
             _parkingAreaRepository = parkingAreaRepository;
+            _pricingStrategies = pricingStrategies;
         }
 
         public async Task<Parking> CreateParkingAsync(CreateParkingDTO parkingDTO)
@@ -58,7 +59,16 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services {
                 throw new Exception("Motorista já possui um estacionamento ativo.");
             }
 
-            decimal priceParking = (parkingDTO.TimeInMins == 60) ? Price1Hour : Price2Hours;
+            var strategy = _pricingStrategies.FirstOrDefault(s => s.Handles == existingVehicle.Type);
+
+            if (strategy == null)
+            {
+                throw new Exception("Não há regra de preço definida para o tipo de veículo '{existingVehicle.Type}'.");
+            ;
+            }
+
+            decimal calculatedPrice = strategy.CalculatePrice(parkingDTO.TimeInMins);
+
             DateTime startTime = DateTime.UtcNow;
             DateTime endTime = startTime.AddMinutes(parkingDTO.TimeInMins);
 

@@ -5,6 +5,8 @@ using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Context;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Repositories;
+using ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Services;
+using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services.Pricing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,12 +27,12 @@ builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IParkingService, ParkingService>();
 builder.Services.AddScoped<IParkingAreaService, ParkingAreaService>();
 
-// builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 
-//builder.Services.AddScoped<IPricingStrategy, CarPricingStrategy>();
-//builder.Services.AddScoped<IPricingStrategy, MotorcyclePricingStrategy>();
-//builder.Services.AddScoped<IPricingStrategy, VanPricingStrategy>();
+builder.Services.AddScoped<IPricingStrategy, CarPricingStrategy>();
+builder.Services.AddScoped<IPricingStrategy, MotorcyclePricingStrategy>();
+builder.Services.AddScoped<IPricingStrategy, VanPricingStrategy>();
 
 // builder.Services.AddScoped<IMapService, GoogleMapService>(); // Descomente quando criar
 // builder.Services.AddHttpClient<IMapService, GoogleMapService>(client =>
