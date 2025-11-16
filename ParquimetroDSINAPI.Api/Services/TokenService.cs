@@ -17,9 +17,9 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Services
 
         public TokenService(IConfiguration config)
         {
-            _issuer = config["Jwt:Issuer"];
-            _audience = config["Jwt:Audience"];
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+            _issuer = config["Jwt:Issuer"]!;
+            _audience = config["Jwt:Audience"]!;
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
         }
 
         public string GenerateToken(Driver driver)

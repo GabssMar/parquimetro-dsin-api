@@ -8,6 +8,9 @@ using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services.Pricing;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Context;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Repositories;
 using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +19,25 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<BaseContext>(options =>
     options.UseNpgsql(connectionString,
-    npgsqlOptions => npgsqlOptions.MigrationsAssembly(Assembly.GetAssembly(typeof(BaseContext)).FullName)));
+    npgsqlOptions => npgsqlOptions.MigrationsAssembly(Assembly.GetAssembly(typeof(BaseContext))!.FullName)));
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"]!,
+            ValidAudience = builder.Configuration["Jwt:Audience"]!,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
 
+builder.Services.AddAuthorization();
 
 
 builder.Services.AddScoped<IDriverRepository, DriverRepository>();
@@ -62,6 +81,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 
