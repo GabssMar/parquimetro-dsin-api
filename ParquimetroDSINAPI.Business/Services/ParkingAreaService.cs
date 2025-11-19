@@ -3,6 +3,7 @@ using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Entities;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -93,6 +94,57 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
                 throw new Exception("Área de estacionamento não encontrada.");
             }
             return area;
+        }
+
+        public async Task<ParkingArea?> GetAreaByCoordinatesAsync(double latitude, double longitude)
+        {
+            var allAreas = await _parkingAreaRepository.GetAllAsync();
+
+            foreach (var area in allAreas)
+            {
+                if (string.IsNullOrEmpty(area.MapCoordinates)) continue;
+
+                try
+                {
+                    var polygonPath = System.Text.Json.JsonSerializer.Deserialize<List<CoordinateDTO>>(
+                        area.MapCoordinates,
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    );
+
+                    if (polygonPath != null && IsPointInPolygon(latitude, longitude, polygonPath))
+                    {
+                        return area;
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+
+            return null;
+        }
+
+        private bool IsPointInPolygon(double lat, double lng, List<CoordinateDTO> polygon)
+        {
+            bool inside = false;
+            int j = polygon.Count - 1;
+
+            for (int i = 0; i < polygon.Count; i++)
+            {
+                if (polygon[i].Longitude < lng && polygon[j].Longitude >= lng ||
+                    polygon[j].Longitude < lng && polygon[i].Longitude >= lng)
+                {
+                    if (polygon[i].Latitude + (lng - polygon[i].Longitude) /
+                       (polygon[j].Longitude - polygon[i].Longitude) * (polygon[j].Latitude - polygon[i].Latitude) < lat)
+                    {
+                        inside = !inside;
+                    }
+                }
+                j = i;
+            }
+
+            return inside;
         }
     }
 }

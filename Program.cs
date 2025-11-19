@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Services;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Entities;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IRepository;
@@ -7,10 +10,12 @@ using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services.Pricing;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Context;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Data.Repositories;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
+
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,17 +62,53 @@ builder.Services.AddScoped<IPricingStrategy, CarPricingStrategy>();
 builder.Services.AddScoped<IPricingStrategy, MotorcyclePricingStrategy>();
 builder.Services.AddScoped<IPricingStrategy, VanPricingStrategy>();
 
-// builder.Services.AddScoped<IMapService, GoogleMapService>(); // Descomente quando criar
-// builder.Services.AddHttpClient<IMapService, GoogleMapService>(client =>
-// {
-//     client.BaseAddress = new Uri("https://maps.googleapis.com");
-// });
+builder.Services.AddHttpClient<IMapService, GoogleMapService>(client =>
+{
+    client.BaseAddress = new Uri("https://maps.googleapis.com/maps/api/");
+});
 
+builder.Services.AddHttpClient<IPaymentService, FakePaymentService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:3000/");
+});
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "ParquimetroAPI", Version = "v1" });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Insira o token JWT desta maneira: Bearer {seu_token}"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -80,8 +121,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

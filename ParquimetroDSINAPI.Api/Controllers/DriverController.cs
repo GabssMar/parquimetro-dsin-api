@@ -3,19 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.DTOs;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices;
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
+using ParquimetroDSINAPI.Api.Extensions;
 
 namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
 {
     [ApiController]
-    [Route("api/driver")]
+    [Route("api/drivers")]
     [Authorize]
-    public class DriverController : ControllerBase
+    public class DriversController : ControllerBase
     {
         private readonly IDriverService _driverService;
 
-        public DriverController(IDriverService driverService)
+        public DriversController(IDriverService driverService)
         {
             _driverService = driverService;
         }
@@ -25,7 +25,8 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
+
                 var driver = await _driverService.GetDriverProfileAsync(driverId);
                 return Ok(driver);
             }
@@ -40,7 +41,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
                 var updatedDriver = await _driverService.UpdateDriverProfileAsync(driverId, dto);
                 return Ok(updatedDriver);
             }
@@ -55,7 +56,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
                 await _driverService.DeleteDriverAsync(driverId);
                 return NoContent();
             }
@@ -63,16 +64,6 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
-        }
-
-        private Guid GetDriverIdFromToken()
-        {
-            var claim = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
-            if (claim == null)
-            {
-                throw new Exception("Token inválido ou ID do usuário não encontrado.");
-            }
-            return new Guid(claim.Value);
         }
     }
 }

@@ -18,14 +18,16 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services {
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IParkingAreaRepository _parkingAreaRepository;
         private readonly IEnumerable<IPricingStrategy> _pricingStrategies;
+        private readonly IPaymentService _paymentService;
 
-        public ParkingService(IParkingRepository parkingRepository, IDriverRepository driverRepository, IVehicleRepository vehicleRepository, IParkingAreaRepository parkingAreaRepository, IEnumerable<IPricingStrategy> pricingStrategies)
+        public ParkingService(IParkingRepository parkingRepository, IDriverRepository driverRepository, IVehicleRepository vehicleRepository, IParkingAreaRepository parkingAreaRepository, IEnumerable<IPricingStrategy> pricingStrategies, IPaymentService paymentService)
         {
             _parkingRepository = parkingRepository;
             _driverRepository = driverRepository;
             _vehicleRepository = vehicleRepository;
             _parkingAreaRepository = parkingAreaRepository;
             _pricingStrategies = pricingStrategies;
+            _paymentService = paymentService;
         }
 
         public async Task<Parking> CreateParkingAsync(CreateParkingDTO parkingDTO)
@@ -64,10 +66,24 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services {
             if (strategy == null)
             {
                 throw new Exception("Não há regra de preço definida para o tipo de veículo '{existingVehicle.Type}'.");
-            ;
             }
 
             decimal calculatedPrice = strategy.CalculatePrice(parkingDTO.TimeInMins);
+
+            var paymentData = new PaymentDTO
+            {
+                Bank = parkingDTO.BankId,
+                PaymentMethod = parkingDTO.PaymentMethod,
+                Value = calculatedPrice,
+                Time = parkingDTO.TimeInMins
+            };
+
+            bool paymentApproved = await _paymentService.ProcessPaymentAsync(paymentData);
+
+            if(!paymentApproved)
+            {
+                throw new Exception("Pagamento recusado pela operadora financeira.");
+            }
 
             DateTime startTime = DateTime.UtcNow;
             DateTime endTime = startTime.AddMinutes(parkingDTO.TimeInMins);

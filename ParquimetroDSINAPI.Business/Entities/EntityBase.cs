@@ -9,7 +9,7 @@
         public EntityBase()
         {
             this.Id = Guid.NewGuid();
-            this.CreatedAt = DateTime.Now;
+            this.CreatedAt = DateTime.UtcNow;
         }
     }
 }

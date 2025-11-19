@@ -13,5 +13,6 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices
         Task DeleteParkingAreaAsync(Guid Id);
         Task<ParkingArea> GetParkingAreaByIdAsync(Guid Id);
         Task<List<ParkingArea>> GetAllParkingAreasAsync();
+        Task<ParkingArea?> GetAreaByCoordinatesAsync(double latitude, double longitude);
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.DTOs;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Entities;
-using System.IdentityModel.Tokens.Jwt;
+using ParquimetroDSINAPI.Api.Extensions;
 
 namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
 {
@@ -24,15 +24,13 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
 
-                if (dto.DriverId != driverId)
-                {
-                    return BadRequest(new { message = "O ID do motorista no corpo da requisição deve corresponder ao motorista autenticado." });
-                }
+                dto.DriverId = driverId;
 
                 var newParking = await _parkingService.CreateParkingAsync(dto);
-                return CreatedAtAction(nameof(GetActiveParking), new { parkingId = newParking.Id }, newParking);
+
+                return CreatedAtAction(nameof(GetParkingById), new { parkingId = newParking.Id }, newParking);
             }
             catch (Exception ex)
             {
@@ -45,7 +43,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
                 var activeParking = await _parkingService.GetActiveParkingByDriverIdAsync(driverId);
 
                 if (activeParking == null)
@@ -66,13 +64,8 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
                 var history = await _parkingService.GetParkingHistoryByDriverIdAsync(driverId);
-
-                if (history == null || history.Count == 0)
-                {
-                    return NotFound(new { message = "Histórico de estacionamentos não encontrado." });
-                }
 
                 return Ok(history);
             }
@@ -87,7 +80,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
                 var parking = await _parkingService.GetParkingByIdAsync(parkingId);
 
                 if (parking == null)
@@ -97,7 +90,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
 
                 if (parking.DriverId != driverId)
                 {
-                    return BadRequest(new { message = "Você não tem permissão para visualizar este ticket de estacionamento." });
+                    return Unauthorized(new { message = "Você não tem permissão para visualizar este ticket." });
                 }
 
                 return Ok(parking);
@@ -106,23 +99,6 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
-        }
-
-        private Guid GetDriverIdFromToken()
-        {
-
-            var claim = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
-            if (claim == null)
-            {
-                throw new Exception("Token inválido ou ID do usuário não encontrado.");
-            }
-
-            if (!Guid.TryParse(claim.Value, out Guid driverId))
-            {
-                throw new Exception("O ID do motorista no token está em formato inválido.");
-            }
-
-            return driverId;
         }
     }
 }

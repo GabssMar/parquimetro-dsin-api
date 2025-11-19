@@ -6,5 +6,7 @@
         public Guid ParkingAreaId { get; set; }
         public int TimeInMins { get; set; }
         public Guid VehicleId { get; set; }
+        public int PaymentMethod {  get; set; }
+        public int BankId { get; set; }
     }
 }

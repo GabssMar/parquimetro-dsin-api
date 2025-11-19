@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.DTOs;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Interfaces.IServices;
-using System.IdentityModel.Tokens.Jwt;
 using ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Entities;
+using ParquimetroDSINAPI.Api.Extensions;
 
 namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
 {
     [ApiController]
-    [Route("api/vehicle")]
+    [Route("api/vehicles")]
     [Authorize]
     public class VehicleController : ControllerBase
     {
@@ -19,13 +19,13 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
             _vehicleService = vehicleService;
         }
 
-        [HttpPost("profile")]
+        [HttpPost]
         public async Task<IActionResult> CreateVehicle([FromBody] CreateVehicleDTO dto)
         {
             try
             {
+                dto.DriverId = User.GetId();
 
-                dto.DriverId = GetDriverIdFromToken();
                 var newVehicle = await _vehicleService.CreateVehicleAsync(dto);
                 return StatusCode(201, newVehicle);
             }
@@ -40,7 +40,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
                 var vehicles = await _vehicleService.GetVehiclesByDriverAsync(driverId);
                 return Ok(vehicles);
             }
@@ -55,7 +55,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
                 var vehicle = await EnsureVehicleOwnershipAsync(driverId, vehicleId);
 
                 return Ok(vehicle);
@@ -71,7 +71,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
                 await EnsureVehicleOwnershipAsync(driverId, vehicleId);
 
                 var updatedVehicle = await _vehicleService.UpdateVehicleAsync(vehicleId, dto);
@@ -88,7 +88,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
         {
             try
             {
-                var driverId = GetDriverIdFromToken();
+                var driverId = User.GetId();
                 await EnsureVehicleOwnershipAsync(driverId, vehicleId);
 
                 await _vehicleService.DeleteVehicleAsync(vehicleId);
@@ -98,17 +98,6 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Api.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
-        }
-
-
-        private Guid GetDriverIdFromToken()
-        {
-            var claim = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
-            if (claim == null)
-            {
-                throw new Exception("Token inválido ou ID do usuário não encontrado.");
-            }
-            return new Guid(claim.Value);
         }
 
         private async Task<Vehicle> EnsureVehicleOwnershipAsync(Guid driverId, Guid vehicleId)
