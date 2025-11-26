@@ -27,7 +27,9 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
                 throw new Exception("Motorista não encontrado.");
             }
 
-            var existingVehicle = await _vehicleRepository.FindByPlateAsync(dto.Plate);
+            string normalizedPlate = dto.Plate.Replace("-", "").ToUpper();
+
+            var existingVehicle = await _vehicleRepository.FindByPlateAsync(normalizedPlate);
             if (existingVehicle != null)
             {
                 throw new Exception("Veículo com esta placa já está cadastrado.");
@@ -36,7 +38,7 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
             var newVehicle = new Vehicle
             {
                 DriverId = dto.DriverId,
-                Plate = dto.Plate,
+                Plate = normalizedPlate,
                 Name = dto.Name,
                 Type = dto.Type,
                 Driver = driver
@@ -53,14 +55,16 @@ namespace ParquimetroDSINAPI.ParquimetroDSINAPI.Business.Services
                 throw new Exception("Veículo não encontrado para edição.");
             }
 
-            if (vehicleToUpdate.Plate.ToUpper() != dto.Plate.ToUpper())
+            string normalizedNewPlate = dto.Plate.Replace("-", "").ToUpper();
+
+            if (vehicleToUpdate.Plate.ToUpper() != normalizedNewPlate)
             {
-                var otherVehicle = await _vehicleRepository.FindByPlateAsync(dto.Plate);
+                var otherVehicle = await _vehicleRepository.FindByPlateAsync(normalizedNewPlate);
                 if (otherVehicle != null)
                 {
                     throw new Exception("A nova placa informada já está em uso.");
                 }
-                vehicleToUpdate.Plate = dto.Plate;
+                vehicleToUpdate.Plate = normalizedNewPlate;
             }
 
             vehicleToUpdate.Name = dto.Name;
